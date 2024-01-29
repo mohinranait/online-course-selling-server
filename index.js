@@ -5,6 +5,8 @@ const cookieParser = require('cookie-parser')
 
 const { port } = require('./src/services/secretEnv');
 const connectMongoDb = require('./src/services/database');
+const userRoute = require('./src/routes/userRoutes');
+const courseRoute = require('./src/routes/courseRoutes');
 const app  = express();
 
 // Database is connect
@@ -18,6 +20,10 @@ app.use(cors({
 }));
 app.use(express.json())
 app.use(cookieParser())
+
+
+app.use('/api/v1', userRoute)
+app.use('/api/v1', courseRoute)
 
 
 // home route
