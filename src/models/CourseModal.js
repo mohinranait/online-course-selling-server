@@ -31,6 +31,9 @@ const courseModule = new Schema ({
     totalStudents: {
         type: Array,
     },
+    instructorName: {
+        type: String,
+    },
 
     lesson: {
         type: Number,
@@ -84,7 +87,11 @@ const courseModule = new Schema ({
             topic: String,
             content: String,
         }
-    ]
+    ],
+    enrollmentStatus: {
+        type: String,
+        default:"Open",
+    }
    
 },{timestamps:true})
 

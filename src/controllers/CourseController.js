@@ -5,7 +5,7 @@ const Course = require("../models/CourseModal");
 const createNewCourse = async (req, res) => {
     
     const body = req.body;
-    console.log(body);
+
 
     const tokenId = req.user?.id;
     const userId = req.query?.userId;
@@ -104,13 +104,43 @@ const getAllCourse = async (req, res) => {
     try {
 
         const authorRequest = req.query?.author
+        const category = req.query?.cat;
+        const language = req.query?.lan;
+        const skills = req.query?.skil;
+        const search = req.query?.search;
+        const sortFiled = req.query?.filed || 'createdAt';
+        const sortOrder = req.query?.order || 'desc';
 
         let query = {}
         
         if(authorRequest){
             query.author= authorRequest
         }
-        const courses = await Course.find(query);
+        
+        if(category && category != 'null'){
+            query.category = category            
+        }
+
+        if(language && language != 'null'){
+            query.language = language            
+        }
+
+        if(skills && skills != 'null'){
+            query.courseLevel = skills            
+        }
+
+
+        const searchRegExp = new RegExp(".*"+search+".*",'i')
+
+        if(search && search !== 'null'){
+            query.$or = [
+                {name : {$regex: searchRegExp}},
+                {instructorName: {$regex: searchRegExp}}
+            ]
+        }
+
+        const courses = await Course.find(query)
+        .sort({[sortFiled]: sortOrder });
 
         res.send({
             success:true,
