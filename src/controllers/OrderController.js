@@ -73,12 +73,16 @@ const enrolledCourseExists = async (req,res) => {
         course : courseId,
         courseReciver:  tokenId,
     }
+    console.log(query);
     try {
         const find = await Order.findOne(query);
+        console.log(find);
         let exists = false;
         if(find){
+            console.log('exists');
             exists = true
         }
+        console.log(exists);
         res.send({
             success:true,
             exists, 

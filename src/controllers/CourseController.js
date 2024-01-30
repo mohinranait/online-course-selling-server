@@ -1,5 +1,6 @@
 const { isObjectIdOrHexString } = require("mongoose");
 const Course = require("../models/CourseModal");
+const User = require("../models/UserModel");
 
 // new course
 const createNewCourse = async (req, res) => {
@@ -154,10 +155,63 @@ const getAllCourse = async (req, res) => {
     }
 }
 
+// all course
+const instructorWishCourse = async (req, res) => {  
+    try {
+
+        const category = req.query?.cat;
+        const skills = req.query?.skil;
+        const search = req.query?.search;
+        const sortFiled = req.query?.filed || 'createdAt';
+        const sortOrder = req.query?.order || 'desc';
+
+        const instructorId = req.params?.id;
+
+        let query = {
+            author : instructorId
+        }
+        
+        
+        if(category && category != 'null'){
+            query.category = category            
+        }
+
+        if(skills && skills != 'null'){
+            query.courseLevel = skills            
+        }
+
+
+        const searchRegExp = new RegExp(".*"+search+".*",'i')
+
+        if(search && search !== 'null'){
+            query.$or = [
+                {name : {$regex: searchRegExp}},
+                {instructorName: {$regex: searchRegExp}}
+            ]
+        }
+
+        const courses = await Course.find(query)
+        .sort({[sortFiled]: sortOrder });
+        const instructor = await User.findById({_id: instructorId}).select("-password") 
+
+        res.send({
+            success:true,
+            courses,
+            instructor
+        })
+    } catch (error) {
+        res.status(500).send({
+            success:false,
+            message: error.message,
+        })
+    }
+}
+
 
 module.exports = {
     createNewCourse,
     getSingleCourseById,
     updateSingleCourseById,
     getAllCourse,
+    instructorWishCourse
 }
